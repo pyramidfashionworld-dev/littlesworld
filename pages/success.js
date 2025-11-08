@@ -1,52 +1,35 @@
-import Script from "next/script";
-import { useRouter } from "next/router";
+import Link from "next/link";
+import { useEffect } from "react";
 
-export default function Checkout() {
-  const router = useRouter();
-
-  const handlePayment = async () => {
-    const amount = 500; // Example: ₹500
-
-    const orderResponse = await fetch("/api/order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount }),
-    });
-
-    const order = await orderResponse.json();
-
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: order.amount,
-      currency: "INR",
-      name: "Littles World",
-      description: "Payment for baby clothing",
-      order_id: order.id,
-      handler: function (response) {
-        // ✅ Redirect to Thank You page
-        router.push("/success");
-      },
-      prefill: {
-        name: "Customer",
-        email: "customer@example.com",
-        contact: "9999999999",
-      },
-      theme: { color: "#f472b6" },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  };
+export default function Success() {
+  useEffect(() => {
+    // Optionally clear local cart storage if used
+    localStorage.removeItem("cart");
+  }, []);
 
   return (
-    <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      <button
-        onClick={handlePayment}
-        className="bg-pink-500 text-white px-6 py-3 rounded-xl"
-      >
-        Pay ₹500
-      </button>
-    </>
+    <div className="min-h-screen bg-pink-50 flex flex-col items-center justify-center p-6 text-center">
+      <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full">
+        <img
+          src="/images/success.png"
+          alt="Success"
+          className="mx-auto mb-6 w-24 h-24"
+        />
+        <h1 className="text-3xl font-bold text-pink-600 mb-2">
+          Payment Successful!
+        </h1>
+        <p className="text-gray-700 mb-4">
+          Thank you for your purchase at <span className="font-semibold">Little’s World</span>.
+        </p>
+        <p className="text-gray-500 mb-6">
+          A confirmation email with your order details has been sent.
+        </p>
+        <Link href="/">
+          <button className="bg-pink-500 text-white py-2 px-6 rounded-lg hover:bg-pink-600 transition">
+            Back to Home
+          </button>
+        </Link>
+      </div>
+    </div>
   );
 }
