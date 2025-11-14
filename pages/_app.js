@@ -3,12 +3,16 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { CartProvider } from "../context/CartContext";
 import { Facebook, Instagram, Phone, Mail, MessageCircle } from "lucide-react";
+import Script from "next/script";
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter();
 
   return (
     <CartProvider>
+      {/* Razorpay Script */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
+
       {/* ==== NAVBAR ==== */}
       <nav className="fixed top-0 left-0 w-full bg-pink-200 text-gray-800 shadow-md z-50">
         <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
@@ -33,9 +37,10 @@ export default function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
       </main>
 
-      {/* ==== GLOBAL FOOTER ==== */}
+      {/* ==== FOOTER ==== */}
       <footer className="bg-pink-200 mt-10 py-8 rounded-t-3xl shadow-inner text-gray-800">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+          
           {/* Brand Info */}
           <div>
             <h3 className="text-2xl font-bold text-pink-700 mb-2">Little World 🧸</h3>
@@ -70,6 +75,7 @@ export default function MyApp({ Component, pageProps }) {
               <a href="#" className="hover:text-pink-600"><MessageCircle size={24}/></a>
             </div>
           </div>
+
         </div>
 
         <div className="text-center text-sm text-gray-600 mt-6">

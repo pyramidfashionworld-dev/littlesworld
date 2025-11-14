@@ -1,89 +1,136 @@
-import { useCart } from "../context/CartContext";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function CartPage() {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const [cart, setCart] = useState([]);
+  const router = useRouter();
 
-  // Calculate total price
-  const totalPrice = cart.reduce(
+  // Load cart from localStorage
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCart(saved);
+  }, []);
+
+  // Save cart to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const increaseQuantity = (id) => {
+    setCart(
+      cart.map((item) =>
+        item.id === id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+  };
+
+  const decreaseQuantity = (id) => {
+    setCart(
+      cart.map((item) =>
+        item.id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
+  };
+
+  const removeItem = (id) => {
+    setCart(cart.filter((item) => item.id !== id));
+  };
+
+  const totalAmount = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
+  const goToCheckout = () => {
+    router.push("/checkout");
+  };
+
+  if (cart.length === 0) {
+    return (
+      <div style={{ padding: 30, textAlign: "center" }}>
+        <h2>Your cart is empty</h2>
+        <p>Add some cute baby wear to begin the fun.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white py-10 px-6">
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
-        <h1 className="text-3xl font-bold text-pink-600 mb-6 text-center">
-          Your Shopping Cart 🛍️
-        </h1>
+    <div style={{ padding: 20 }}>
+      <h1 style={{ textAlign: "center" }}>Your Cart</h1>
 
-        {cart.length === 0 ? (
-          <div className="text-center text-gray-600">
-            <p>Your cart is empty.</p>
-            <Link
-              href="/shop"
-              className="inline-block mt-4 bg-pink-500 text-white px-6 py-2 rounded-xl hover:bg-pink-600"
+      {cart.map((item) => (
+        <div
+          key={item.id}
+          style={{
+            display: "flex",
+            gap: 20,
+            border: "1px solid #ddd",
+            padding: 15,
+            borderRadius: 10,
+            marginBottom: 20,
+          }}
+        >
+          <img
+            src={item.image}
+            alt={item.name}
+            style={{ width: 100, height: 100, objectFit: "cover" }}
+          />
+
+          <div style={{ flex: 1 }}>
+            <h3>{item.name}</h3>
+            <p>₹ {item.price}</p>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                marginTop: 10,
+              }}
             >
-              Go to Shop
-            </Link>
+              <button onClick={() => decreaseQuantity(item.id)}>-</button>
+              <span>{item.quantity}</span>
+              <button onClick={() => increaseQuantity(item.id)}>+</button>
+            </div>
+
+            <button
+              style={{
+                marginTop: 10,
+                background: "red",
+                color: "#fff",
+                padding: "6px 12px",
+                border: "none",
+                borderRadius: 5,
+                cursor: "pointer",
+              }}
+              onClick={() => removeItem(item.id)}
+            >
+              Remove
+            </button>
           </div>
-        ) : (
-          <>
-            <div className="space-y-6">
-              {cart.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between border-b pb-4"
-                >
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-20 h-20 rounded-lg object-cover"
-                    />
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {item.name}
-                      </h3>
-                      <p className="text-pink-500 font-semibold">
-                        ₹{item.price} × {item.quantity}
-                      </p>
-                    </div>
-                  </div>
+        </div>
+      ))}
 
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="bg-red-100 text-red-500 px-4 py-1 rounded-xl hover:bg-red-200"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 text-center">
-              <h2 className="text-xl font-bold text-gray-800 mb-3">
-                Total: ₹{totalPrice}
-              </h2>
-
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={clearCart}
-                  className="bg-gray-200 text-gray-700 px-5 py-2 rounded-xl hover:bg-gray-300"
-                >
-                  Clear Cart
-                </button>
-
-                <Link
-                  href="/checkout"
-                  className="bg-pink-500 text-white px-6 py-2 rounded-xl hover:bg-pink-600"
-                >
-                  Proceed to Checkout
-                </Link>
-              </div>
-            </div>
-          </>
-        )}
+      <div style={{ textAlign: "center", marginTop: 20 }}>
+        <h2>Total: ₹ {totalAmount}</h2>
+        <button
+          style={{
+            background: "#0f73ee",
+            color: "#fff",
+            padding: "12px 20px",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            marginTop: 10,
+          }}
+          onClick={goToCheckout}
+        >
+          Proceed to Checkout
+        </button>
       </div>
     </div>
   );
