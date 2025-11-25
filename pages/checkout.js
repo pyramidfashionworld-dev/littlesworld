@@ -1,3 +1,13 @@
+// At the top of checkout.js
+useEffect(() => {
+  const cartItems = localStorage.getItem('checkout_items');
+  const total = localStorage.getItem('checkout_total');
+  
+  if (cartItems) {
+    setCartItems(JSON.parse(cartItems));
+    setTotal(parseFloat(total));
+  }
+}, []);
 import { useEffect } from "react";
 
 export default function CheckoutPage() {
