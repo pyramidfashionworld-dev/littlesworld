@@ -1,7 +1,14 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-images: {
-domains: ["littlesworld.co.in", "res.cloudinary.com"],
-},
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+  },
 };
+
 module.exports = nextConfig;

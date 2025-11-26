@@ -1,0 +1,7 @@
+remotePatterns: [
+  {
+    protocol: 'https',
+    hostname: 'cdn.example.com',
+    pathname: '/images/**',
+  },
+]

@@ -1,4 +1,14 @@
-node_modules/ 
-.next/ 
-dist/ 
-.env 
+# Environment variables
+.env*.local
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js
+/node_modules
+/.next
+/out
+/build
+.next
+.next/

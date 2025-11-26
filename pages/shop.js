@@ -1,86 +1,228 @@
-import { useCart } from "../context/CartContext";
+// pages/shop.js
+import Link from "next/link";
+import { Star, Filter, ShoppingCart } from "lucide-react";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
-import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function Shop() {
-  const { addToCart } = useCart();
+  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [cart, setCart] = useState([]);
 
   const products = [
-    { id: 1, name: "Cute Pink Romper", price: 499, image: "/images/product1.jpg" },
-    { id: 2, name: "Soft Cotton Onesie", price: 399, image: "/images/product2.jpg" },
-    { id: 3, name: "Blue Baby Set", price: 599, image: "/images/product3.jpg" },
-    { id: 4, name: "Floral Dress", price: 699, image: "/images/product4.jpg" },
-    { id: 5, name: "Baby Shoes", price: 299, image: "/images/product5.jpg" },
-    { id: 6, name: "Winter Wool Cap", price: 199, image: "/images/product6.jpg" },
-    { id: 7, name: "Soft Blanket", price: 499, image: "/images/product7.jpg" },
-    { id: 8, name: "Baby Socks Pack", price: 249, image: "/images/product8.jpg" },
-    { id: 9, name: "Baby Feeding Bottle", price: 349, image: "/images/product9.jpg" },
-    { id: 10, name: "Baby Gloves", price: 199, image: "/images/product10.jpg" },
-    { id: 11, name: "Baby Carrier", price: 899, image: "/images/product11.jpg" },
-    { id: 12, name: "Adorable Hat", price: 249, image: "/images/product12.jpg" },
-    { id: 13, name: "Teddy Night Suit", price: 549, image: "/images/product13.jpg" },
-    { id: 14, name: "Cartoon Print Bibs", price: 179, image: "/images/product14.jpg" },
-    { id: 15, name: "Baby Pillow", price: 299, image: "/images/product15.jpg" },
-    { id: 16, name: "Baby Towels", price: 399, image: "/images/product16.jpg" },
-    { id: 17, name: "Cute Hairband Set", price: 149, image: "/images/product17.jpg" },
-    { id: 18, name: "Baby Gift Box", price: 999, image: "/images/product18.jpg" },
+    {
+      id: 1,
+      name: "Organic Cotton Romper",
+      price: 899,
+      category: "rompers",
+      image: "👶",
+      rating: 4.8,
+      description: "Soft and breathable organic cotton romper",
+    },
+    {
+      id: 2,
+      name: "Soft Bamboo Onesie",
+      price: 799,
+      category: "onesies",
+      image: "👕",
+      rating: 4.9,
+      description: "Ultra-soft bamboo fabric onesie",
+    },
+    {
+      id: 3,
+      name: "Premium Sleep Set",
+      price: 1299,
+      category: "sleepwear",
+      image: "🛏️",
+      rating: 4.7,
+      description: "Comfortable sleep set for babies",
+    },
+    {
+      id: 4,
+      name: "Floral Dress",
+      price: 1099,
+      category: "dresses",
+      image: "👗",
+      rating: 4.9,
+      description: "Beautiful floral pattern dress",
+    },
+    {
+      id: 5,
+      name: "Striped T-Shirt",
+      price: 599,
+      category: "shirts",
+      image: "👕",
+      rating: 4.6,
+      description: "Comfortable striped cotton t-shirt",
+    },
+    {
+      id: 6,
+      name: "Cozy Sweater",
+      price: 1199,
+      category: "sweaters",
+      image: "🧶",
+      rating: 4.8,
+      description: "Warm and cozy baby sweater",
+    },
+    {
+      id: 7,
+      name: "Denim Overalls",
+      price: 1399,
+      category: "overalls",
+      image: "👖",
+      rating: 4.7,
+      description: "Classic denim overalls for babies",
+    },
+    {
+      id: 8,
+      name: "Soft Booties",
+      price: 499,
+      category: "accessories",
+      image: "👶",
+      rating: 4.9,
+      description: "Soft and warm baby booties",
+    },
   ];
 
+  const categories = [
+    { id: "all", name: "All Products" },
+    { id: "rompers", name: "Rompers" },
+    { id: "onesies", name: "Onesies" },
+    { id: "dresses", name: "Dresses" },
+    { id: "shirts", name: "Shirts" },
+    { id: "sweaters", name: "Sweaters" },
+    { id: "sleepwear", name: "Sleepwear" },
+    { id: "overalls", name: "Overalls" },
+    { id: "accessories", name: "Accessories" },
+  ];
+
+  const filteredProducts =
+    selectedCategory === "all"
+      ? products
+      : products.filter((p) => p.category === selectedCategory);
+
+  const handleAddToCart = (product) => {
+    try {
+      // Get existing cart from localStorage
+      const cartData = localStorage.getItem("littlesworld_cart");
+      const existingCart = cartData ? JSON.parse(cartData) : [];
+      
+      // Check if product already exists in cart
+      const existingItem = existingCart.find((item) => item.id === product.id);
+      
+      if (existingItem) {
+        // Increase quantity if product already in cart
+        existingItem.quantity += 1;
+      } else {
+        // Add new product to cart
+        existingCart.push({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1,
+          image: product.image,
+        });
+      }
+
+      // Save updated cart to localStorage
+      localStorage.setItem("littlesworld_cart", JSON.stringify(existingCart));
+      
+      // Verify it was saved
+      const saved = localStorage.getItem("littlesworld_cart");
+      console.log("Cart saved:", saved);
+      
+      // Show confirmation
+      alert(`✅ ${product.name} added to cart!\n\nGo to Checkout to see your items.`);
+      
+      // Update local state
+      setCart(existingCart);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("Error adding to cart. Please try again.");
+    }
+  };
+
   return (
-    <div className="bg-pink-50 min-h-screen flex flex-col">
-      {/* Navbar */}
+    <>
       <Navbar />
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <h1 className="text-4xl font-bold mb-2">Our Shop</h1>
+        <p className="text-gray-600 mb-8">Browse our premium collection of baby clothing</p>
 
-      {/* Shop Header */}
-      <section className="text-center py-10 bg-pink-100">
-        <h1 className="text-4xl font-bold text-pink-600">Shop</h1>
-        <p className="text-gray-600 mt-2">Adorable products for your little ones 💖</p>
-      </section>
-
-      {/* Product Grid */}
-      <section className="container mx-auto py-8 px-4 flex-grow">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white shadow-lg rounded-2xl p-4 flex flex-col items-center hover:shadow-pink-200 transition-shadow duration-300"
-            >
-              <div className="w-full h-56 relative mb-4">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover rounded-xl"
-                  onError={(e) => (e.target.src = "/images/fallback.jpg")}
-                />
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Filters Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow p-6 sticky top-24">
+              <div className="flex items-center gap-2 mb-4">
+                <Filter size={20} />
+                <h3 className="font-bold text-lg">Filter by Category</h3>
               </div>
-              <h2 className="text-lg font-semibold text-gray-800">{product.name}</h2>
-              <p className="text-pink-600 font-bold mt-1">₹{product.price}</p>
-              <button
-                onClick={() => addToCart(product)}
-                className="mt-3 px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-xl transition duration-300"
-              >
-                Add to Cart
-              </button>
+              <div className="space-y-2">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`w-full text-left px-4 py-2 rounded-lg transition ${
+                      selectedCategory === category.id
+                        ? "bg-pink-600 text-white font-semibold"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
 
-      {/* Footer */}
-      <footer className="bg-pink-200 text-center py-6 text-pink-800 font-medium">
-        <p>© {new Date().getFullYear()} Little World. All Rights Reserved.</p>
-        <p>
-          Follow us on{" "}
-          <a
-            href="https://www.instagram.com/dlittleworld_26"
-            target="_blank"
-            className="underline hover:text-pink-600"
-          >
-            Instagram
-          </a>
-        </p>
-      </footer>
-    </div>
+          {/* Products Grid */}
+          <div className="lg:col-span-3">
+            <div className="text-sm text-gray-600 mb-6">
+              Showing {filteredProducts.length} products
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition"
+                >
+                  <div className="text-6xl p-6 bg-gray-100 text-center h-48 flex items-center justify-center">
+                    {product.image}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-bold text-lg mb-2 line-clamp-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-3">
+                      {product.description}
+                    </p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Star
+                        size={16}
+                        className="text-yellow-400 fill-yellow-400"
+                      />
+                      <span className="text-sm text-gray-600">
+                        {product.rating}
+                      </span>
+                    </div>
+                    <p className="text-xl font-bold text-pink-600 mb-4">
+                      ₹{product.price}
+                    </p>
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className="w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 font-semibold flex items-center justify-center gap-2 transition"
+                    >
+                      <ShoppingCart size={18} />
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

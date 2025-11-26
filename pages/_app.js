@@ -1,24 +1,18 @@
-import '../styles/globals.css'
-   
-   export default function App({ Component, pageProps }) {
-     return <Component {...pageProps} />
-   }
-   import "@/styles/globals.css";
+import "../styles/globals.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { CartProvider } from "../context/CartContext";
-import { Facebook, Instagram, Phone, Mail, MessageCircle } from "lucide-react";
 import Script from "next/script";
+import { Phone, Mail, MessageCircle, Instagram, Facebook } from "lucide-react";
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter();
 
   return (
-    <CartProvider>
+    <>
       {/* Razorpay Script */}
-      <Script 
-        src="https://checkout.razorpay.com/v1/checkout.js" 
-        strategy="afterInteractive" 
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
       />
 
       {/* ==== NAVBAR ==== */}
@@ -41,8 +35,8 @@ export default function MyApp({ Component, pageProps }) {
             <Link href="/checkout" className="hover:text-pink-600">
               Checkout
             </Link>
-            <Link href="/about" className="hover:text-pink-600">
-              About
+            <Link href="/contact" className="hover:text-pink-600">
+              Contact
             </Link>
           </div>
         </div>
@@ -99,15 +93,15 @@ export default function MyApp({ Component, pageProps }) {
               >
                 <Instagram size={24} /> @dlittleworld_26
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="hover:text-pink-600"
                 aria-label="Facebook"
               >
                 <Facebook size={24} />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="hover:text-pink-600"
                 aria-label="WhatsApp"
               >
@@ -115,13 +109,12 @@ export default function MyApp({ Component, pageProps }) {
               </a>
             </div>
           </div>
-
         </div>
 
         <div className="text-center text-sm text-gray-600 mt-6">
           © {new Date().getFullYear()} Little World. All rights reserved.
         </div>
       </footer>
-    </CartProvider>
+    </>
   );
 }
