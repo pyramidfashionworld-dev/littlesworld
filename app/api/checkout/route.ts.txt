@@ -1,16 +1,72 @@
+import Razorpay from 'razorpay';
+
+const razorpay = new Razorpay({
+  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+  key_secret: process.env.RAZORPAY_KEY_SECRET || '',
+});
+
 export async function POST(request: Request) {
-  const data = await request.json();
-  
-  // Validate data
-  if (!data.cardNumber || !data.email) {
-    return Response.json({ error: 'Missing required fields' }, { status: 400 });
+  try {
+    const body = await request.json();
+    const { amount, currency, receipt, description, customerEmail, customerName } = body;
+
+    const options = {
+      amount: Math.round(amount * 100), // Amount in paise
+      currency: currency || 'INR',
+      receipt: receipt || `receipt_${Date.now()}`,
+      description: description || 'Order Payment',
+      customer_notify: 1,
+      notes: {
+        email: customerEmail,
+        name: customerName,
+      },
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    return Response.json({
+      success: true,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+    });
+  } catch (error) {
+    console.error('Razorpay error:', error);
+    return Response.json(
+      { success: false, error: 'Failed to create order' },
+      { status: 500 }
+    );
   }
+}
 
-  // Call your payment processor (Stripe, PayPal, etc.)
-  // Example: const payment = await stripe.paymentIntents.create(...)
+// Verify payment after successful transaction
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
 
-  return Response.json({ 
-    success: true, 
-    orderId: Math.random().toString(36).substring(7) 
-  });
+    const crypto = require('crypto');
+    const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '');
+    hmac.update(razorpay_order_id + '|' + razorpay_payment_id);
+    const generated_signature = hmac.digest('hex');
+
+    if (generated_signature === razorpay_signature) {
+      return Response.json({
+        success: true,
+        message: 'Payment verified successfully',
+        paymentId: razorpay_payment_id,
+      });
+    } else {
+      return Response.json(
+        { success: false, error: 'Invalid signature' },
+        { status: 400 }
+      );
+    }
+  } catch (error) {
+    console.error('Verification error:', error);
+    return Response.json(
+      { success: false, error: 'Verification failed' },
+      { status: 500 }
+    );
+  }
 }
