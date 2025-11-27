@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, CreditCard, QrCode, Smartphone } from 'lucide-react';
 
 interface CartItem {
   id: number;
@@ -24,13 +24,18 @@ interface FormData {
   cardNumber: string;
   expiry: string;
   cvv: string;
+  upiId: string;
 }
+
 interface Errors {
   [key: string]: string;
 }
 
+type PaymentMethod = 'upi' | 'qr' | 'card' | 'debit' | null;
+
 export default function CheckoutFlow() {
   const [step, setStep] = useState<number>(1);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
   const [formData, setFormData] = useState<FormData>({
     items: [
       { id: 1, name: 'Product 1', price: 999, qty: 1 },
@@ -48,6 +53,7 @@ export default function CheckoutFlow() {
     cardNumber: '',
     expiry: '',
     cvv: '',
+    upiId: '',
   });
 
   const [errors, setErrors] = useState<Errors>({});
@@ -76,10 +82,16 @@ export default function CheckoutFlow() {
       if (!formData.state) newErrors.state = 'State required';
       if (!formData.zipCode) newErrors.zipCode = 'ZIP code required';
     } else if (step === 3) {
-      if (!formData.cardName) newErrors.cardName = 'Cardholder name required';
-      if (!formData.cardNumber) newErrors.cardNumber = 'Card number required';
-      if (!formData.expiry) newErrors.expiry = 'Expiry date required';
-      if (!formData.cvv) newErrors.cvv = 'CVV required';
+      if (!paymentMethod) newErrors.paymentMethod = 'Select payment method';
+
+      if (paymentMethod === 'card' || paymentMethod === 'debit') {
+        if (!formData.cardName) newErrors.cardName = 'Cardholder name required';
+        if (!formData.cardNumber) newErrors.cardNumber = 'Card number required';
+        if (!formData.expiry) newErrors.expiry = 'Expiry date required';
+        if (!formData.cvv) newErrors.cvv = 'CVV required';
+      } else if (paymentMethod === 'upi') {
+        if (!formData.upiId) newErrors.upiId = 'UPI ID required';
+      }
     }
 
     setErrors(newErrors);
@@ -101,7 +113,6 @@ export default function CheckoutFlow() {
   const handleSubmit = async () => {
     if (validateStep()) {
       try {
-        // Create order on backend
         const orderRes = await fetch('/api/razorpay', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -109,9 +120,10 @@ export default function CheckoutFlow() {
             amount: orderTotal,
             currency: 'INR',
             receipt: `order_${Date.now()}`,
-            description: 'Little\'s World Order',
+            description: `Little's World Order - ${paymentMethod?.toUpperCase()}`,
             email: formData.email,
             name: `${formData.firstName} ${formData.lastName}`,
+            method: paymentMethod,
           }),
         });
 
@@ -122,7 +134,6 @@ export default function CheckoutFlow() {
           return;
         }
 
-        // Razorpay payment options
         const options: any = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           order_id: orderData.orderId,
@@ -130,14 +141,19 @@ export default function CheckoutFlow() {
           currency: 'INR',
           name: "Little's World",
           description: 'Order Payment',
-          customer_id: formData.email,
           prefill: {
             name: `${formData.firstName} ${formData.lastName}`,
             email: formData.email,
             contact: formData.phone,
           },
+          method: {
+            upi: paymentMethod === 'upi',
+            netbanking: false,
+            card: paymentMethod === 'card' || paymentMethod === 'debit',
+            wallet: false,
+          },
+          theme: { color: '#2563EB' },
           handler: async (response: any) => {
-            // Verify payment on backend
             const verifyRes = await fetch('/api/razorpay', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
@@ -152,10 +168,10 @@ export default function CheckoutFlow() {
 
             if (verifyData.success) {
               alert(
-                `✅ Payment Successful!\n\nOrder ID: ${response.razorpay_order_id}\nPayment ID: ${response.razorpay_payment_id}\n\nThank you for your order!`
+                `✅ Payment Successful!\n\nOrder ID: ${response.razorpay_order_id}\nPayment Method: ${paymentMethod?.toUpperCase()}\n\nThank you for your order!`
               );
-              // Reset form
               setStep(1);
+              setPaymentMethod(null);
               setFormData(prev => ({
                 ...prev,
                 firstName: '',
@@ -170,26 +186,20 @@ export default function CheckoutFlow() {
                 cardNumber: '',
                 expiry: '',
                 cvv: '',
+                upiId: '',
               }));
             } else {
               alert('❌ Payment verification failed. Please contact support.');
             }
           },
-          theme: {
-            color: '#2563EB',
-          },
         };
 
-        // Load and open Razorpay checkout
         const script = document.createElement('script');
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
         script.async = true;
         script.onload = () => {
           const rzp = new (window as any).Razorpay(options);
           rzp.open();
-        };
-        script.onerror = () => {
-          alert('Failed to load Razorpay. Please try again.');
         };
         document.body.appendChild(script);
       } catch (error) {
@@ -255,7 +265,7 @@ export default function CheckoutFlow() {
                         <p className="font-semibold text-gray-900">{item.name}</p>
                         <p className="text-sm text-gray-500">Qty: {item.qty}</p>
                       </div>
-                      <p className="font-bold text-lg text-blue-600">₹{(item.price * item.qty)}</p>
+                      <p className="font-bold text-lg text-blue-600">₹{item.price * item.qty}</p>
                     </div>
                   ))}
                 </div>
@@ -384,68 +394,170 @@ export default function CheckoutFlow() {
 
               {step === 3 && (
                 <div>
-                  <h2 className="text-2xl font-bold mb-6 text-gray-900">Payment Details</h2>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
-                      <input
-                        type="text"
-                        name="cardName"
-                        value={formData.cardName}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.cardName ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                      />
-                      {errors.cardName && <p className="text-red-500 text-xs mt-1">{errors.cardName}</p>}
-                    </div>
+                  <h2 className="text-2xl font-bold mb-6 text-gray-900">Select Payment Method</h2>
+                  {errors.paymentMethod && <p className="text-red-500 text-sm mb-4">{errors.paymentMethod}</p>}
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                      <input
-                        type="text"
-                        name="cardNumber"
-                        placeholder="1234 5678 9012 3456"
-                        value={formData.cardNumber}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.cardNumber ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                      />
-                      {errors.cardNumber && <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>}
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {/* UPI Option */}
+                    <button
+                      onClick={() => setPaymentMethod('upi')}
+                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${
+                        paymentMethod === 'upi'
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-300 hover:border-blue-400'
+                      }`}
+                    >
+                      <Smartphone size={32} className="text-blue-600" />
+                      <div className="text-left">
+                        <p className="font-semibold">UPI Payment</p>
+                        <p className="text-sm text-gray-600">Google Pay, PhonePe, etc</p>
+                      </div>
+                    </button>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                        <input
-                          type="text"
-                          name="expiry"
-                          placeholder="MM/YY"
-                          value={formData.expiry}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.expiry ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                        />
-                        {errors.expiry && <p className="text-red-500 text-xs mt-1">{errors.expiry}</p>}
+                    {/* QR Code Option */}
+                    <button
+                      onClick={() => setPaymentMethod('qr')}
+                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${
+                        paymentMethod === 'qr'
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-300 hover:border-blue-400'
+                      }`}
+                    >
+                      <QrCode size={32} className="text-blue-600" />
+                      <div className="text-left">
+                        <p className="font-semibold">Scan QR Code</p>
+                        <p className="text-sm text-gray-600">Quick & Easy</p>
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                        <input
-                          type="text"
-                          name="cvv"
-                          placeholder="123"
-                          value={formData.cvv}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cvv ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                        />
-                        {errors.cvv && <p className="text-red-500 text-xs mt-1">{errors.cvv}</p>}
+                    </button>
+
+                    {/* Credit Card Option */}
+                    <button
+                      onClick={() => setPaymentMethod('card')}
+                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${
+                        paymentMethod === 'card'
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-300 hover:border-blue-400'
+                      }`}
+                    >
+                      <CreditCard size={32} className="text-blue-600" />
+                      <div className="text-left">
+                        <p className="font-semibold">Credit Card</p>
+                        <p className="text-sm text-gray-600">Visa, Mastercard</p>
                       </div>
-                    </div>
+                    </button>
+
+                    {/* Debit Card Option */}
+                    <button
+                      onClick={() => setPaymentMethod('debit')}
+                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${
+                        paymentMethod === 'debit'
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-300 hover:border-blue-400'
+                      }`}
+                    >
+                      <CreditCard size={32} className="text-blue-600" />
+                      <div className="text-left">
+                        <p className="font-semibold">Debit Card</p>
+                        <p className="text-sm text-gray-600">Visa, Mastercard, RuPay</p>
+                      </div>
+                    </button>
                   </div>
+
+                  {/* Payment Details Form */}
+                  {(paymentMethod === 'card' || paymentMethod === 'debit') && (
+                    <div className="space-y-4 mt-6 pt-6 border-t">
+                      <h3 className="font-semibold text-gray-900">Card Details</h3>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                        <input
+                          type="text"
+                          name="cardName"
+                          value={formData.cardName}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.cardName ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                        />
+                        {errors.cardName && <p className="text-red-500 text-xs mt-1">{errors.cardName}</p>}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                        <input
+                          type="text"
+                          name="cardNumber"
+                          placeholder="1234 5678 9012 3456"
+                          value={formData.cardNumber}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.cardNumber ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                        />
+                        {errors.cardNumber && <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                          <input
+                            type="text"
+                            name="expiry"
+                            placeholder="MM/YY"
+                            value={formData.expiry}
+                            onChange={handleInputChange}
+                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors.expiry ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          />
+                          {errors.expiry && <p className="text-red-500 text-xs mt-1">{errors.expiry}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                          <input
+                            type="text"
+                            name="cvv"
+                            placeholder="123"
+                            value={formData.cvv}
+                            onChange={handleInputChange}
+                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors.cvv ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          />
+                          {errors.cvv && <p className="text-red-500 text-xs mt-1">{errors.cvv}</p>}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'upi' && (
+                    <div className="space-y-4 mt-6 pt-6 border-t">
+                      <h3 className="font-semibold text-gray-900">UPI Details</h3>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">UPI ID</label>
+                        <input
+                          type="text"
+                          name="upiId"
+                          placeholder="yourname@upi"
+                          value={formData.upiId}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.upiId ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                        />
+                        {errors.upiId && <p className="text-red-500 text-xs mt-1">{errors.upiId}</p>}
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'qr' && (
+                    <div className="space-y-4 mt-6 pt-6 border-t text-center">
+                      <h3 className="font-semibold text-gray-900">Scan QR Code</h3>
+                      <div className="bg-gray-100 p-8 rounded-lg inline-block">
+                        <QrCode size={150} className="text-gray-400" />
+                      </div>
+                      <p className="text-sm text-gray-600">Scan with any UPI app</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -508,7 +620,7 @@ export default function CheckoutFlow() {
                     onClick={handleSubmit}
                     className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
                   >
-                    Place Order
+                    Pay ₹{orderTotal}
                   </button>
                 )}
               </div>
