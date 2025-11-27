@@ -25,7 +25,6 @@ interface FormData {
   expiry: string;
   cvv: string;
 }
-
 interface Errors {
   [key: string]: string;
 }
