@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShoppingCart, Heart, Search, Filter, X } from 'lucide-react';
+import { ShoppingCart, Heart, Search, X } from 'lucide-react';
 import Link from 'next/link';
 
 interface Product {
   id: number;
   name: string;
-  category: string;
+  ageGroup: string;
   price: number;
   image: string;
   description: string;
@@ -22,103 +22,143 @@ interface CartItem {
   qty: number;
 }
 
-const BABY_PRODUCTS: Product[] = [
+const NEWBORN_PRODUCTS: Product[] = [
   {
     id: 1,
-    name: 'Baby Girl Dress - Pink',
-    category: 'Dresses',
-    price: 599,
-    image: '👗',
-    description: 'Cute pink cotton dress for baby girls',
-    rating: 4.5,
+    name: 'Newborn Onesie - Soft Pink',
+    ageGroup: '0-6 months',
+    price: 449,
+    image: 'https://images.unsplash.com/photo-1618886815814-e5d84c6b9e94?w=400&h=400&fit=crop',
+    description: 'Ultra-soft organic cotton onesie for newborns',
+    rating: 4.9,
     inStock: true,
   },
   {
     id: 2,
-    name: 'Baby Boy Romper - Blue',
-    category: 'Rompers',
-    price: 649,
-    image: '👕',
-    description: 'Comfortable blue romper for baby boys',
+    name: 'Baby Sleeper Set - Mint Green',
+    ageGroup: '0-3 months',
+    price: 549,
+    image: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc338?w=400&h=400&fit=crop',
+    description: 'Comfortable sleeper set with mittens',
     rating: 4.8,
     inStock: true,
   },
   {
     id: 3,
-    name: 'Soft Baby Blanket',
-    category: 'Accessories',
-    price: 499,
-    image: '🛏️',
-    description: 'Ultra-soft cotton baby blanket',
-    rating: 4.6,
-    inStock: true,
-  },
-  {
-    id: 4,
-    name: 'Baby Booties Set',
-    category: 'Footwear',
+    name: 'Infant Bodysuit - White',
+    ageGroup: '0-12 months',
     price: 399,
-    image: '👶',
-    description: 'Set of 3 colorful baby booties',
+    image: 'https://images.unsplash.com/photo-1519689373023-dd07e1b1c5bb?w=400&h=400&fit=crop',
+    description: 'Classic white bodysuit for infants',
     rating: 4.7,
     inStock: true,
   },
   {
+    id: 4,
+    name: 'Toddler T-shirt - Rainbow',
+    ageGroup: '1-2 years',
+    price: 399,
+    image: 'https://images.unsplash.com/photo-1503919545889-48854d7ee213?w=400&h=400&fit=crop',
+    description: 'Colorful rainbow t-shirt for toddlers',
+    rating: 4.6,
+    inStock: true,
+  },
+  {
     id: 5,
-    name: 'Teething Toy',
-    category: 'Toys',
-    price: 299,
-    image: '🎀',
-    description: 'Safe silicone teething toy',
-    rating: 4.4,
+    name: 'Baby Girl Dress - Floral',
+    ageGroup: '1-2 years',
+    price: 549,
+    image: 'https://images.unsplash.com/photo-1519689373023-dd07e1b1c5bb?w=400&h=400&fit=crop',
+    description: 'Beautiful floral dress for baby girls',
+    rating: 4.8,
     inStock: true,
   },
   {
     id: 6,
-    name: 'Baby Hat & Mittens',
-    category: 'Accessories',
-    price: 349,
-    image: '🧢',
-    description: 'Warm winter set for babies',
-    rating: 4.3,
+    name: 'Baby Boy Shorts - Blue Denim',
+    ageGroup: '2-3 years',
+    price: 449,
+    image: 'https://images.unsplash.com/photo-1503919545889-48854d7ee213?w=400&h=400&fit=crop',
+    description: 'Trendy blue denim shorts for boys',
+    rating: 4.5,
     inStock: true,
   },
   {
     id: 7,
-    name: 'Organic Baby Soap',
-    category: 'Care',
-    price: 199,
-    image: '🧼',
-    description: 'Gentle organic baby soap',
-    rating: 4.9,
+    name: 'Toddler Jacket - Navy Blue',
+    ageGroup: '2-3 years',
+    price: 699,
+    image: 'https://images.unsplash.com/photo-1495121553079-4c61bcce1894?w=400&h=400&fit=crop',
+    description: 'Warm navy blue jacket for toddlers',
+    rating: 4.7,
     inStock: true,
   },
   {
     id: 8,
-    name: 'Baby Onesie Set',
-    category: 'Clothing',
-    price: 749,
-    image: '👕',
-    description: 'Pack of 3 comfortable onesies',
+    name: 'Kid Sweater - Gray',
+    ageGroup: '3-5 years',
+    price: 599,
+    image: 'https://images.unsplash.com/photo-1503919545889-48854d7ee213?w=400&h=400&fit=crop',
+    description: 'Cozy gray sweater for kids',
     rating: 4.6,
+    inStock: true,
+  },
+  {
+    id: 9,
+    name: 'Kids Joggers - Black',
+    ageGroup: '3-5 years',
+    price: 499,
+    image: 'https://images.unsplash.com/photo-1503919545889-48854d7ee213?w=400&h=400&fit=crop',
+    description: 'Comfortable black joggers for kids',
+    rating: 4.4,
+    inStock: true,
+  },
+  {
+    id: 10,
+    name: 'Baby Pajama Set - Pink Stars',
+    ageGroup: '1-3 years',
+    price: 449,
+    image: 'https://images.unsplash.com/photo-1618886815814-e5d84c6b9e94?w=400&h=400&fit=crop',
+    description: 'Soft pajama set with cute stars',
+    rating: 4.8,
+    inStock: true,
+  },
+  {
+    id: 11,
+    name: 'Toddler Dungarees - Yellow',
+    ageGroup: '1-2 years',
+    price: 549,
+    image: 'https://images.unsplash.com/photo-1519689373023-dd07e1b1c5bb?w=400&h=400&fit=crop',
+    description: 'Cute yellow dungarees for toddlers',
+    rating: 4.7,
+    inStock: true,
+  },
+  {
+    id: 12,
+    name: 'Kids Hoodie - Red',
+    ageGroup: '3-5 years',
+    price: 649,
+    image: 'https://images.unsplash.com/photo-1495121553079-4c61bcce1894?w=400&h=400&fit=crop',
+    description: 'Warm red hoodie for active kids',
+    rating: 4.5,
     inStock: true,
   },
 ];
 
-const CATEGORIES = ['All', 'Dresses', 'Rompers', 'Clothing', 'Toys', 'Accessories', 'Care', 'Footwear'];
+const AGE_GROUPS = ['All', '0-6 months', '0-3 months', '0-12 months', '1-2 years', '2-3 years', '3-5 years'];
 
-export default function BabyCollection() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+export default function NewbornCollection() {
+  const [selectedAge, setSelectedAge] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState('popular');
 
-  const filteredProducts = BABY_PRODUCTS.filter((product) => {
-    const matchCategory = selectedCategory === 'All' || product.category === selectedCategory;
+  const filteredProducts = NEWBORN_PRODUCTS.filter((product) => {
+    const matchAge = selectedAge === 'All' || product.ageGroup === selectedAge;
     const matchSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchCategory && matchSearch;
+    return matchAge && matchSearch;
   }).sort((a, b) => {
     if (sortBy === 'price-low') return a.price - b.price;
     if (sortBy === 'price-high') return b.price - a.price;
@@ -152,17 +192,20 @@ export default function BabyCollection() {
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
+      <header className="bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-3xl">👶</span>
-            <h1 className="text-2xl font-bold text-purple-600">Baby Collection</h1>
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">🍼</span>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Newborn Collection</h1>
+              <p className="text-sm text-blue-100 font-semibold">littlesworld (0-5 Years)</p>
+            </div>
           </div>
           <button
             onClick={() => setShowCart(!showCart)}
-            className="relative bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700 transition"
+            className="relative bg-white text-blue-600 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-50 transition font-semibold"
           >
             <ShoppingCart size={20} />
             Cart
@@ -177,7 +220,7 @@ export default function BabyCollection() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
+          {/* Sidebar Filters */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-lg p-6 sticky top-24">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Filters</h2>
@@ -189,10 +232,10 @@ export default function BabyCollection() {
                   <Search size={18} className="absolute left-3 top-3 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Search products..."
+                    placeholder="Search clothes..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -203,7 +246,7 @@ export default function BabyCollection() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="popular">Most Popular</option>
                   <option value="price-low">Price: Low to High</option>
@@ -212,21 +255,21 @@ export default function BabyCollection() {
                 </select>
               </div>
 
-              {/* Categories */}
+              {/* Age Groups */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Categories</label>
+                <label className="block text-sm font-medium text-gray-700 mb-3">Age Group</label>
                 <div className="space-y-2">
-                  {CATEGORIES.map((category) => (
+                  {AGE_GROUPS.map((age) => (
                     <button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
+                      key={age}
+                      onClick={() => setSelectedAge(age)}
                       className={`w-full text-left px-4 py-2 rounded-lg transition ${
-                        selectedCategory === category
-                          ? 'bg-purple-600 text-white'
+                        selectedAge === age
+                          ? 'bg-blue-600 text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
-                      {category}
+                      {age}
                     </button>
                   ))}
                 </div>
@@ -272,11 +315,11 @@ export default function BabyCollection() {
                     <div className="border-t pt-4">
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-lg font-bold text-gray-900">Total:</span>
-                        <span className="text-2xl font-bold text-purple-600">₹{cartTotal}</span>
+                        <span className="text-2xl font-bold text-blue-600">₹{cartTotal}</span>
                       </div>
 
                       <Link href="/checkout">
-                        <button className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                        <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
                           Proceed to Checkout
                         </button>
                       </Link>
@@ -295,8 +338,15 @@ export default function BabyCollection() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProducts.map((product) => (
                     <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
-                      <div className="relative bg-gradient-to-br from-pink-100 to-purple-100 p-8 text-center">
-                        <span className="text-6xl">{product.image}</span>
+                      <div className="relative bg-gray-200 h-64 overflow-hidden">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-cover hover:scale-105 transition"
+                        />
+                        <div className="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-bold">
+                          {product.ageGroup}
+                        </div>
                         <button
                           onClick={() => toggleFavorite(product.id)}
                           className={`absolute top-3 right-3 p-2 rounded-full transition ${
@@ -310,15 +360,11 @@ export default function BabyCollection() {
                       </div>
 
                       <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-bold text-gray-900 text-sm">{product.name}</h3>
-                        </div>
-
-                        <p className="text-xs text-gray-600 mb-2">{product.category}</p>
+                        <h3 className="font-bold text-gray-900 text-sm mb-2">{product.name}</h3>
                         <p className="text-xs text-gray-500 mb-3">{product.description}</p>
 
                         <div className="flex justify-between items-center mb-4">
-                          <span className="text-lg font-bold text-purple-600">₹{product.price}</span>
+                          <span className="text-lg font-bold text-blue-600">₹{product.price}</span>
                           <div className="flex items-center gap-1">
                             <span className="text-yellow-400">★</span>
                             <span className="text-xs font-semibold">{product.rating}</span>
@@ -327,7 +373,7 @@ export default function BabyCollection() {
 
                         <button
                           onClick={() => addToCart(product)}
-                          className="w-full bg-purple-600 text-white py-2 rounded-lg font-semibold hover:bg-purple-700 transition flex items-center justify-center gap-2"
+                          className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
                         >
                           <ShoppingCart size={16} />
                           Add to Cart
@@ -343,9 +389,33 @@ export default function BabyCollection() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white mt-16 py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-gray-400">© 2025 Little's World Baby Collection. All rights reserved.</p>
+      <footer className="bg-gradient-to-r from-gray-900 to-blue-900 text-white mt-16 py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                <span className="text-2xl">🍼</span>
+                littlesworld
+              </h3>
+              <p className="text-gray-400">Premium newborn & kids collection for 0-5 years</p>
+            </div>
+            <div>
+              <h4 className="font-bold mb-3">Quick Links</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="/baby-collection" className="hover:text-white">Baby Collection</a></li>
+                <li><a href="/newborn-collection" className="hover:text-white">Newborn Collection</a></li>
+                <li><a href="/checkout" className="hover:text-white">Checkout</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold mb-3">Contact</h4>
+              <p className="text-gray-400">Email: info@littlesworld.co.in</p>
+              <p className="text-gray-400">Phone: +91 9876543210</p>
+            </div>
+          </div>
+          <div className="border-t border-gray-700 pt-8 text-center">
+            <p className="text-gray-400">© 2025 <span className="font-bold text-white">littlesworld</span>. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
