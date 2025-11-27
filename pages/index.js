@@ -1,4 +1,10 @@
 // pages/index.js
+<Link
+  href="/newborn-collection"
+  className="inline-block bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700"
+>
+  Explore Newborn Collection →
+</Link>
 import Navbar from "../components/Navbar";
 import Link from "next/link";
 import { Star, TrendingUp, Shield, Sparkles } from "lucide-react";
