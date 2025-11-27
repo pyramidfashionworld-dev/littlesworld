@@ -562,10 +562,6 @@ export default function CheckoutFlow() {
                   <span className="text-gray-600">Shipping</span>
                   <span className="text-gray-900">₹{shippingCost}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tax</span>
-                  <span className="text-gray-900">₹{tax}</span>
-                </div>
               </div>
 
               <div className="flex justify-between text-lg font-bold mb-8 pb-8 border-b">
