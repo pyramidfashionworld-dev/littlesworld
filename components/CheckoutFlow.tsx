@@ -120,7 +120,7 @@ export default function CheckoutFlow() {
             amount: orderTotal,
             currency: 'INR',
             receipt: `order_${Date.now()}`,
-            description: `Little's World Order - ${paymentMethod?.toUpperCase()}`,
+            description: `Littles World Order - ${paymentMethod?.toUpperCase()}`,
             email: formData.email,
             name: `${formData.firstName} ${formData.lastName}`,
             method: paymentMethod,
@@ -130,7 +130,7 @@ export default function CheckoutFlow() {
         const orderData = await orderRes.json();
 
         if (!orderData.success) {
-          alert('❌ Failed to create payment order. Try again.');
+          alert('Failed to create payment order. Try again.');
           return;
         }
 
@@ -139,7 +139,7 @@ export default function CheckoutFlow() {
           order_id: orderData.orderId,
           amount: orderData.amount,
           currency: 'INR',
-          name: "Little's World",
+          name: "Littles World",
           description: 'Order Payment',
           prefill: {
             name: `${formData.firstName} ${formData.lastName}`,
@@ -168,7 +168,14 @@ export default function CheckoutFlow() {
 
             if (verifyData.success) {
               alert(
-                `✅ Payment
+                `Payment Successful!\n\nOrder ID: ${response.razorpay_order_id}\nPayment Method: ${paymentMethod?.toUpperCase()}\n\nThank you for your order!`
+              );
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            } else {
+              alert('Payment verification failed. Please contact support.');
+            }
           },
         };
 
@@ -182,7 +189,7 @@ export default function CheckoutFlow() {
         document.body.appendChild(script);
       } catch (error) {
         console.error('Payment error:', error);
-        alert('❌ An error occurred. Please try again.');
+        alert('An error occurred. Please try again.');
       }
     }
   };
@@ -204,21 +211,13 @@ export default function CheckoutFlow() {
             <React.Fragment key={num}>
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all ${
-                  num < step
-                    ? 'bg-green-500 text-white'
-                    : num === step
-                    ? 'bg-blue-600 text-white ring-4 ring-blue-300'
-                    : 'bg-gray-300 text-gray-600'
+                  num < step ? 'bg-green-500 text-white' : num === step ? 'bg-blue-600 text-white ring-4 ring-blue-300' : 'bg-gray-300 text-gray-600'
                 }`}
               >
                 {num < step ? <Check size={24} /> : num}
               </div>
               {num < 3 && (
-                <div
-                  className={`flex-1 h-1 mx-2 transition-all ${
-                    num < step ? 'bg-green-500' : 'bg-gray-300'
-                  }`}
-                />
+                <div className={`flex-1 h-1 mx-2 transition-all ${num < step ? 'bg-green-500' : 'bg-gray-300'}`} />
               )}
             </React.Fragment>
           ))}
@@ -260,9 +259,7 @@ export default function CheckoutFlow() {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.firstName ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.firstName ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
                       </div>
@@ -273,9 +270,7 @@ export default function CheckoutFlow() {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.lastName ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.lastName ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
                       </div>
@@ -288,9 +283,7 @@ export default function CheckoutFlow() {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.email ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                       />
                       {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                     </div>
@@ -302,9 +295,7 @@ export default function CheckoutFlow() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.phone ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
                       />
                       {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                     </div>
@@ -316,9 +307,7 @@ export default function CheckoutFlow() {
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.address ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
                       />
                       {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
                     </div>
@@ -331,9 +320,7 @@ export default function CheckoutFlow() {
                           name="city"
                           value={formData.city}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.city ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
                       </div>
@@ -344,9 +331,7 @@ export default function CheckoutFlow() {
                           name="state"
                           value={formData.state}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.state ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.state ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
                       </div>
@@ -359,9 +344,7 @@ export default function CheckoutFlow() {
                         name="zipCode"
                         value={formData.zipCode}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.zipCode ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.zipCode ? 'border-red-500' : 'border-gray-300'}`}
                       />
                       {errors.zipCode && <p className="text-red-500 text-xs mt-1">{errors.zipCode}</p>}
                     </div>
@@ -375,30 +358,20 @@ export default function CheckoutFlow() {
                   {errors.paymentMethod && <p className="text-red-500 text-sm mb-4">{errors.paymentMethod}</p>}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {/* UPI Option */}
                     <button
                       onClick={() => setPaymentMethod('upi')}
-                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${
-                        paymentMethod === 'upi'
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-300 hover:border-blue-400'
-                      }`}
+                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${paymentMethod === 'upi' ? 'border-blue-600 bg-blue-50' : 'border-gray-300 hover:border-blue-400'}`}
                     >
                       <Smartphone size={32} className="text-blue-600" />
                       <div className="text-left">
                         <p className="font-semibold">UPI Payment</p>
-                        <p className="text-sm text-gray-600">Google Pay, PhonePe, etc</p>
+                        <p className="text-sm text-gray-600">Google Pay, PhonePe</p>
                       </div>
                     </button>
 
-                    {/* QR Code Option */}
                     <button
                       onClick={() => setPaymentMethod('qr')}
-                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${
-                        paymentMethod === 'qr'
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-300 hover:border-blue-400'
-                      }`}
+                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${paymentMethod === 'qr' ? 'border-blue-600 bg-blue-50' : 'border-gray-300 hover:border-blue-400'}`}
                     >
                       <QrCode size={32} className="text-blue-600" />
                       <div className="text-left">
@@ -407,14 +380,9 @@ export default function CheckoutFlow() {
                       </div>
                     </button>
 
-                    {/* Credit Card Option */}
                     <button
                       onClick={() => setPaymentMethod('card')}
-                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${
-                        paymentMethod === 'card'
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-300 hover:border-blue-400'
-                      }`}
+                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${paymentMethod === 'card' ? 'border-blue-600 bg-blue-50' : 'border-gray-300 hover:border-blue-400'}`}
                     >
                       <CreditCard size={32} className="text-blue-600" />
                       <div className="text-left">
@@ -423,14 +391,9 @@ export default function CheckoutFlow() {
                       </div>
                     </button>
 
-                    {/* Debit Card Option */}
                     <button
                       onClick={() => setPaymentMethod('debit')}
-                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${
-                        paymentMethod === 'debit'
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-300 hover:border-blue-400'
-                      }`}
+                      className={`p-4 border-2 rounded-lg flex items-center gap-3 transition ${paymentMethod === 'debit' ? 'border-blue-600 bg-blue-50' : 'border-gray-300 hover:border-blue-400'}`}
                     >
                       <CreditCard size={32} className="text-blue-600" />
                       <div className="text-left">
@@ -440,7 +403,6 @@ export default function CheckoutFlow() {
                     </button>
                   </div>
 
-                  {/* Payment Details Form */}
                   {(paymentMethod === 'card' || paymentMethod === 'debit') && (
                     <div className="space-y-4 mt-6 pt-6 border-t">
                       <h3 className="font-semibold text-gray-900">Card Details</h3>
@@ -451,9 +413,7 @@ export default function CheckoutFlow() {
                           name="cardName"
                           value={formData.cardName}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cardName ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardName ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.cardName && <p className="text-red-500 text-xs mt-1">{errors.cardName}</p>}
                       </div>
@@ -466,9 +426,7 @@ export default function CheckoutFlow() {
                           placeholder="1234 5678 9012 3456"
                           value={formData.cardNumber}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cardNumber ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.cardNumber && <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>}
                       </div>
@@ -482,9 +440,7 @@ export default function CheckoutFlow() {
                             placeholder="MM/YY"
                             value={formData.expiry}
                             onChange={handleInputChange}
-                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors.expiry ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.expiry ? 'border-red-500' : 'border-gray-300'}`}
                           />
                           {errors.expiry && <p className="text-red-500 text-xs mt-1">{errors.expiry}</p>}
                         </div>
@@ -496,9 +452,7 @@ export default function CheckoutFlow() {
                             placeholder="123"
                             value={formData.cvv}
                             onChange={handleInputChange}
-                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors.cvv ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cvv ? 'border-red-500' : 'border-gray-300'}`}
                           />
                           {errors.cvv && <p className="text-red-500 text-xs mt-1">{errors.cvv}</p>}
                         </div>
@@ -517,9 +471,7 @@ export default function CheckoutFlow() {
                           placeholder="yourname@upi"
                           value={formData.upiId}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.upiId ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.upiId ? 'border-red-500' : 'border-gray-300'}`}
                         />
                         {errors.upiId && <p className="text-red-500 text-xs mt-1">{errors.upiId}</p>}
                       </div>
