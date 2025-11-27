@@ -189,8 +189,7 @@ export default function CheckoutFlow() {
 
   const cartTotal = formData.items.reduce((sum, item) => sum + item.price * item.qty, 0);
   const shippingCost = 100;
-  const tax = Math.round(cartTotal * 0.1);
-  const orderTotal = cartTotal + shippingCost + tax;
+  const orderTotal = cartTotal + shippingCost;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
