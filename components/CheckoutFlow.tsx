@@ -168,29 +168,7 @@ export default function CheckoutFlow() {
 
             if (verifyData.success) {
               alert(
-                `✅ Payment Successful!\n\nOrder ID: ${response.razorpay_order_id}\nPayment Method: ${paymentMethod?.toUpperCase()}\n\nThank you for your order!`
-              );
-              setStep(1);
-              setPaymentMethod(null);
-              setFormData(prev => ({
-                ...prev,
-                firstName: '',
-                lastName: '',
-                email: '',
-                phone: '',
-                address: '',
-                city: '',
-                state: '',
-                zipCode: '',
-                cardName: '',
-                cardNumber: '',
-                expiry: '',
-                cvv: '',
-                upiId: '',
-              }));
-            } else {
-              alert('❌ Payment verification failed. Please contact support.');
-            }
+                `✅ Payment
           },
         };
 
