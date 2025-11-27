@@ -99,9 +99,104 @@ export default function CheckoutFlow() {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateStep()) {
-      alert('✅ Order placed successfully!');
+      try {
+        // Create order on backend
+        const orderRes = await fetch('/api/razorpay', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: orderTotal,
+            currency: 'INR',
+            receipt: `order_${Date.now()}`,
+            description: 'Little\'s World Order',
+            email: formData.email,
+            name: `${formData.firstName} ${formData.lastName}`,
+          }),
+        });
+
+        const orderData = await orderRes.json();
+
+        if (!orderData.success) {
+          alert('❌ Failed to create payment order. Try again.');
+          return;
+        }
+
+        // Razorpay payment options
+        const options: any = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          order_id: orderData.orderId,
+          amount: orderData.amount,
+          currency: 'INR',
+          name: "Little's World",
+          description: 'Order Payment',
+          customer_id: formData.email,
+          prefill: {
+            name: `${formData.firstName} ${formData.lastName}`,
+            email: formData.email,
+            contact: formData.phone,
+          },
+          handler: async (response: any) => {
+            // Verify payment on backend
+            const verifyRes = await fetch('/api/razorpay', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyData.success) {
+              alert(
+                `✅ Payment Successful!\n\nOrder ID: ${response.razorpay_order_id}\nPayment ID: ${response.razorpay_payment_id}\n\nThank you for your order!`
+              );
+              // Reset form
+              setStep(1);
+              setFormData(prev => ({
+                ...prev,
+                firstName: '',
+                lastName: '',
+                email: '',
+                phone: '',
+                address: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                cardName: '',
+                cardNumber: '',
+                expiry: '',
+                cvv: '',
+              }));
+            } else {
+              alert('❌ Payment verification failed. Please contact support.');
+            }
+          },
+          theme: {
+            color: '#2563EB',
+          },
+        };
+
+        // Load and open Razorpay checkout
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        script.onload = () => {
+          const rzp = new (window as any).Razorpay(options);
+          rzp.open();
+        };
+        script.onerror = () => {
+          alert('Failed to load Razorpay. Please try again.');
+        };
+        document.body.appendChild(script);
+      } catch (error) {
+        console.error('Payment error:', error);
+        alert('❌ An error occurred. Please try again.');
+      }
     }
   };
 
