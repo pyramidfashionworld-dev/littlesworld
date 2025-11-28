@@ -1,246 +1,149 @@
-import React, { useState } from 'react';
-import { Loader2, Download, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import Link from 'next/link';
+import Navbar from '../components/Navbar';
+import { ShoppingCart } from 'lucide-react';
 
-export default function ClothingGenerator() {
-  const [loading, setLoading] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState(null);
-  const [prompt, setPrompt] = useState('');
-  const [clothingType, setClothingType] = useState('onesie');
-  const [color, setColor] = useState('white');
-  const [pattern, setPattern] = useState('solid');
+export default function NewbornCollectionPage() {
+  const [isClient] = useState(true);
 
-  const clothingTypes = [
-    { value: 'onesie', label: 'Onesie' },
-    { value: 'romper', label: 'Romper' },
-    { value: 'bodysuit', label: 'Bodysuit' },
-    { value: 'sleepsuit', label: 'Sleepsuit' },
-    { value: 'dress', label: 'Baby Dress' },
-    { value: 'set', label: 'Outfit Set' }
+  const products = [
+    { id: 101, name: 'Organic Newborn Sleeper', price: 1299, image: '👶', rating: 4.9 },
+    { id: 102, name: 'Bamboo Newborn Bodysuit', price: 899, image: '👕', rating: 4.8 },
+    { id: 103, name: 'Premium Newborn Swaddle', price: 1599, image: '🛏️', rating: 4.9 },
+    { id: 104, name: 'Soft Newborn Mittens', price: 499, image: '🧤', rating: 4.7 },
+    { id: 105, name: 'Gentle Newborn Hat', price: 599, image: '🧢', rating: 4.8 },
+    { id: 106, name: 'Newborn Sleep Set', price: 2499, image: '🌙', rating: 4.9 },
   ];
 
-  const colors = [
-    { value: 'white', label: 'White' },
-    { value: 'pink', label: 'Soft Pink' },
-    { value: 'blue', label: 'Baby Blue' },
-    { value: 'yellow', label: 'Pastel Yellow' },
-    { value: 'mint', label: 'Mint Green' },
-    { value: 'lavender', label: 'Lavender' },
-    { value: 'peach', label: 'Peach' }
-  ];
-
-  const patterns = [
-    { value: 'solid', label: 'Solid Color' },
-    { value: 'stripes', label: 'Stripes' },
-    { value: 'polka dots', label: 'Polka Dots' },
-    { value: 'stars', label: 'Stars' },
-    { value: 'animals', label: 'Cute Animals' },
-    { value: 'floral', label: 'Floral' }
-  ];
-
-  const generateClothing = async () => {
-    setLoading(true);
-    setGeneratedImage(null);
-
-    const fullPrompt = `Create a photorealistic product image of a newborn baby ${clothingType} in ${color} color with ${pattern} pattern. The clothing should be displayed flat lay style on a clean white background, professionally lit with soft shadows. The garment should have a small fabric tag visible with "LittlesWorld" brand name embroidered or printed on it. The tag should look natural and high-quality. The clothing should look soft, premium quality, suitable for newborns (0-3 months). Studio photography style, e-commerce product photo quality. ${prompt ? 'Additional details: ' + prompt : ''}`;
-
+  const handleAddToCart = (product) => {
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [
-            {
-              role: 'user',
-              content: fullPrompt
-            }
-          ]
-        })
-      });
-
-      const data = await response.json();
+      const cartData = localStorage.getItem('littlesworld_cart');
+      const existingCart = cartData ? JSON.parse(cartData) : [];
+      const existingItem = existingCart.find((item) => item.id === product.id);
       
-      // Extract text response
-      const textContent = data.content
-        .filter(item => item.type === 'text')
-        .map(item => item.text)
-        .join('\n');
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        existingCart.push({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1,
+          image: product.image,
+        });
+      }
 
-      setGeneratedImage({
-        description: textContent,
-        prompt: fullPrompt
-      });
+      localStorage.setItem('littlesworld_cart', JSON.stringify(existingCart));
+      alert(`✅ ${product.name} added to cart!`);
     } catch (error) {
-      console.error('Error generating image:', error);
-      alert('Failed to generate image. Please try again.');
-    } finally {
-      setLoading(false);
+      console.error('Error:', error);
     }
   };
 
-  const downloadPrompt = () => {
-    const blob = new Blob([generatedImage.prompt], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'littlesworld-prompt.txt';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
-            <Sparkles className="text-pink-500" />
-            LittlesWorld Clothing Generator
+    <>
+      <Navbar />
+
+      {/* Hero */}
+      <section className="bg-gradient-to-br from-pink-100 to-orange-100 py-20">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <span className="text-sm font-semibold text-orange-600 bg-orange-200 px-4 py-2 rounded-full">
+            ✨ New Collection
+          </span>
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mt-4 mb-4">
+            Softest Start: Newborn Essentials
           </h1>
-          <p className="text-gray-600">Create stunning product images for your newborn collection</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Left Panel - Controls */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Clothing Type
-              </label>
-              <select
-                value={clothingType}
-                onChange={(e) => setClothingType(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-pink-400"
-              >
-                {clothingTypes.map(type => (
-                  <option key={type.value} value={type.value}>{type.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Color
-              </label>
-              <select
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-pink-400"
-              >
-                {colors.map(c => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Pattern
-              </label>
-              <select
-                value={pattern}
-                onChange={(e) => setPattern(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-pink-400"
-              >
-                {patterns.map(p => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Additional Details (Optional)
-              </label>
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g., with buttons, organic cotton, gender neutral..."
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-pink-400 h-24 resize-none"
-              />
-            </div>
-
-            <button
-              onClick={generateClothing}
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold py-4 rounded-lg hover:from-pink-600 hover:to-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="animate-spin" size={20} />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles size={20} />
-                  Generate Product Image
-                </>
-              )}
-            </button>
+          <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+            Trusted by parents, loved by littles. Organic, safe, and incredibly soft.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="#products" className="inline-block bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-lg">
+              Shop Now
+            </Link>
           </div>
+        </div>
+      </section>
 
-          {/* Right Panel - Preview */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Generated Design</h2>
-            
-            {!generatedImage && !loading && (
-              <div className="h-96 bg-gray-50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200">
-                <div className="text-center text-gray-400">
-                  <Sparkles size={48} className="mx-auto mb-2 opacity-50" />
-                  <p>Your generated clothing will appear here</p>
+      {/* Value Props */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-16">Why Choose LittlesWorld</h2>
+          <div className="grid md:grid-cols-3 gap-10">
+            <div className="p-8 bg-blue-50 rounded-xl text-center">
+              <div className="text-4xl mb-4">🛡️</div>
+              <h3 className="text-2xl font-bold mb-3">Organic & Certified</h3>
+              <p>GOTS certified, hypoallergenic fabrics</p>
+            </div>
+            <div className="p-8 bg-pink-50 rounded-xl text-center">
+              <div className="text-4xl mb-4">☁️</div>
+              <h3 className="text-2xl font-bold mb-3">Incredibly Soft</h3>
+              <p>Tagless designs for delicate skin</p>
+            </div>
+            <div className="p-8 bg-green-50 rounded-xl text-center">
+              <div className="text-4xl mb-4">🌱</div>
+              <h3 className="text-2xl font-bold mb-3">Built to Last</h3>
+              <p>Durable quality for siblings</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Products */}
+      <section id="products" className="py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-4">Newborn Essentials</h2>
+          <p className="text-center text-gray-600 mb-16">Curated selection for your newborn</p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product) => (
+              <div key={product.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
+                <div className="text-6xl mb-4 text-center">{product.image}</div>
+                <h3 className="font-bold text-lg mb-2">{product.name}</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <p className="text-2xl font-bold text-pink-600">₹{product.price}</p>
+                  <p className="text-yellow-500 font-bold">⭐ {product.rating}</p>
                 </div>
-              </div>
-            )}
-
-            {loading && (
-              <div className="h-96 bg-gray-50 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Loader2 className="animate-spin mx-auto mb-4 text-pink-500" size={48} />
-                  <p className="text-gray-600">Creating your LittlesWorld product...</p>
-                </div>
-              </div>
-            )}
-
-            {generatedImage && (
-              <div className="space-y-4">
-                <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg p-6 border-2 border-pink-200">
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {generatedImage.description}
-                  </p>
-                </div>
-
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <h3 className="font-semibold text-blue-900 mb-2">💡 Next Steps:</h3>
-                  <p className="text-sm text-blue-800">
-                    Use this description with AI image generators like DALL-E, Midjourney, or Stable Diffusion to create the actual product photos. Download the prompt below to use with your preferred tool!
-                  </p>
-                </div>
-
                 <button
-                  onClick={downloadPrompt}
-                  className="w-full bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 transition-all flex items-center justify-center gap-2"
+                  onClick={() => handleAddToCart(product)}
+                  className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2"
                 >
-                  <Download size={20} />
-                  Download Full Prompt
+                  <ShoppingCart size={18} />
+                  Add to Cart
                 </button>
               </div>
-            )}
+            ))}
           </div>
         </div>
+      </section>
 
-        <div className="mt-8 bg-white rounded-2xl shadow-lg p-6">
-          <h3 className="font-bold text-gray-800 mb-3">🎨 Tips for Best Results:</h3>
-          <ul className="space-y-2 text-gray-600 text-sm">
-            <li>• Use the generated prompts with tools like Midjourney, DALL-E, or Stable Diffusion</li>
-            <li>• For consistent branding, keep the same lighting and background style across all products</li>
-            <li>• The "LittlesWorld" tag will be incorporated naturally into each design</li>
-            <li>• Try different combinations to build a complete collection</li>
-            <li>• Add specific fabric details in the "Additional Details" field for more realistic results</li>
-          </ul>
+      {/* Trust Section */}
+      <section className="py-20 bg-orange-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-4xl font-bold mb-12">Our Organic Promise</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white p-8 rounded-xl shadow">
+              <h3 className="text-xl font-bold mb-3">🌾 100% Organic</h3>
+              <p>Sourced from certified organic farms</p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow">
+              <h3 className="text-xl font-bold mb-3">🧪 Rigorously Tested</h3>
+              <p>Independent lab verification</p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow">
+              <h3 className="text-xl font-bold mb-3">♻️ Eco-Friendly</h3>
+              <p>100% recyclable packaging</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-16 bg-gray-900 text-white text-center">
+        <h2 className="text-3xl font-bold mb-4">Ready to Give Your Baby The Softest Start?</h2>
+        <Link href="/checkout" className="inline-block bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-lg">
+          Start Shopping Now
+        </Link>
+      </section>
+    </>
   );
 }

@@ -1,57 +1,85 @@
-// pages/index.js
-<Link
-  href="/newborn-collection"
-  className="inline-block bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700"
->
-  Explore Newborn Collection →
-</Link>
-import Navbar from "../components/Navbar";
-import Link from "next/link";
-import { Star, TrendingUp, Shield, Sparkles } from "lucide-react";
+import { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import Link from 'next/link';
+import { Star, TrendingUp, Shield, Sparkles } from 'lucide-react';
 
 export default function Home() {
-  const featuredProducts = [
+  const [homepageImages, setHomepageImages] = useState([]);
+  const [backgroundImage, setBackgroundImage] = useState(null);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('littlesworld_homepage_images');
+      const bgImage = localStorage.getItem('littlesworld_background_image');
+      const featured = localStorage.getItem('littlesworld_featured_products');
+      
+      if (saved) {
+        setHomepageImages(JSON.parse(saved));
+      }
+      if (bgImage) {
+        setBackgroundImage(bgImage);
+      }
+      if (featured) {
+        setFeaturedProducts(JSON.parse(featured));
+      }
+    }
+  }, []);
+
+  const defaultFeaturedProducts = [
     {
       id: 1,
-      name: "Organic Cotton Romper",
+      name: 'Organic Cotton Romper',
       price: 899,
-      image: "👶",
+      image: '👶',
       rating: 4.8,
     },
     {
       id: 2,
-      name: "Soft Bamboo Onesie",
+      name: 'Soft Bamboo Onesie',
       price: 799,
-      image: "👕",
+      image: '👕',
       rating: 4.9,
     },
     {
       id: 3,
-      name: "Premium Sleep Set",
+      name: 'Premium Sleep Set',
       price: 1299,
-      image: "🛏️",
+      image: '🛏️',
       rating: 4.7,
     },
   ];
+
+  const productsToDisplay = featuredProducts.length > 0 ? featuredProducts : defaultFeaturedProducts;
 
   return (
     <>
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg p-12 mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            🌸 Welcome to Little Petals
-          </h1>
-          <p className="text-xl text-gray-600 mb-6">
-            Premium, organic baby clothing designed with love for your little ones
-          </p>
-          <Link
-            href="/shop"
-            className="inline-block bg-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-pink-700"
-          >
-            Start Shopping
-          </Link>
+        <div
+          className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg p-12 mb-12 text-center relative overflow-hidden"
+          style={{
+            backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'linear-gradient(to right, rgb(253, 207, 225), rgb(243, 204, 229))',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative z-10">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+              🌸 Welcome to Little Petals
+            </h1>
+            <p className="text-xl text-white mb-6 drop-shadow-md">
+              Premium, organic baby clothing designed with love for your little ones
+            </p>
+            <Link
+              href="/shop"
+              className="inline-block bg-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-pink-700 shadow-lg"
+            >
+              Start Shopping
+            </Link>
+          </div>
         </div>
 
         {/* Features */}
@@ -73,14 +101,39 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Uploaded Images Section */}
+        {homepageImages.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold mb-8 text-center">Our Cute Moments 💕</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {homepageImages.map((img) => (
+                <div
+                  key={img.id}
+                  className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition transform hover:scale-105"
+                >
+                  <img src={img.image} alt={img.title} className="w-full h-64 object-cover" />
+                  <div className="p-4 bg-white">
+                    <h3 className="font-bold text-lg text-gray-800">{img.title}</h3>
+                    {img.description && <p className="text-gray-600 text-sm">{img.description}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Featured Products */}
         <div className="mb-12">
           <h2 className="text-3xl font-bold mb-8 text-center">Featured Products</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
+            {productsToDisplay.map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition">
-                <div className="text-6xl p-6 bg-gray-100 text-center">
-                  {product.image}
+                <div className="h-64 bg-gray-100 overflow-hidden flex items-center justify-center">
+                  {product.image && product.image.startsWith('http') ? (
+                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-6xl">{product.image}</div>
+                  )}
                 </div>
                 <div className="p-4">
                   <h3 className="font-bold text-lg mb-2">{product.name}</h3>
@@ -96,18 +149,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* AI Size Tool CTA */}
-        <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg p-8 mb-12 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Not Sure About Size?</h2>
-          <p className="text-gray-600 mb-6">Try our AI-powered size recommendation tool!</p>
-          <Link
-            href="/AISizeTool"
-            className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700"
-          >
-            Get Size Recommendation →
-          </Link>
         </div>
 
         {/* Newsletter */}
