@@ -68,7 +68,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-              🌸 Welcome to Little Petals
+              👶 Welcome to LittlesWorld
             </h1>
             <p className="text-xl text-white mb-6 drop-shadow-md">
               Premium, organic baby clothing designed with love for your little ones
