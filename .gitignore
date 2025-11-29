@@ -11,4 +11,4 @@
 /out
 /build
 .next
-.next/
+.next/.env.local 
