@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
+// import Navbar from '../components/Navbar';
 import Link from 'next/link';
 import { Star, TrendingUp, Shield, Sparkles } from 'lucide-react';
 
@@ -54,7 +54,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* Hero Section */}
         <div
