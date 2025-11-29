@@ -60,7 +60,7 @@ export default function Home() {
         <div
           className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg p-12 mb-12 text-center relative overflow-hidden"
           style={{
-            backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'linear-gradient(to right, rgb(253, 207, 225), rgb(243, 204, 229))',
+            backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'url(/images/cute-baby-bg.jpg.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
