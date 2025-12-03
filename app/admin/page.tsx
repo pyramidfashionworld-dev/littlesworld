@@ -1,22 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-
 export default function AdminDashboard() {
-  const router = useRouter();
-  const [isAuthed, setIsAuthed] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/admin/login');
-    } else {
-      setIsAuthed(true);
-    }
-  }, [router]);
-
-  if (!isAuthed) return <div>Loading...</div>;
-
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
