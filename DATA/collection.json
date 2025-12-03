@@ -1,0 +1,33 @@
+{
+  "id": "baby-warm-winter",
+  "name": "Baby Warm Winter Collection",
+  "category": "baby-clothes",
+  "ageGroup": "0-4 years",
+  "description": "Cozy warm clothes for babies 0-4 years - perfect for winter",
+  "products": [
+    {
+      "id": "bww-001",
+      "name": "Baby Thermal Bodysuit",
+      "ageRange": "0-12 months",
+      "price": 599,
+      "image": "/images/thermal-bodysuit.jpg",
+      "description": "Soft thermal bodysuits for newborns"
+    },
+    {
+      "id": "bww-002",
+      "name": "Fleece Baby Hoodie",
+      "ageRange": "1-3 years",
+      "price": 899,
+      "image": "/images/fleece-hoodie.jpg",
+      "description": "Warm fleece hoodies for active toddlers"
+    },
+    {
+      "id": "bww-003",
+      "name": "Winter Baby Jacket",
+      "ageRange": "2-4 years",
+      "price": 1299,
+      "image": "/images/winter-jacket.jpg",
+      "description": "Insulated winter jackets with waterproof finish"
+    }
+  ]
+}

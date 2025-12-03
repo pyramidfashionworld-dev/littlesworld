@@ -12,3 +12,4 @@
 /build
 .next
 .next/.env.local 
+.vercel
