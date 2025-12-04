@@ -1,0 +1,9 @@
+// In your header/navigation component
+<nav>
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/collections">Collections</a></li>
+    <li><a href="/collections/baby-warm-winter">Baby Warm Winter</a></li>
+    <li><a href="/about">About</a></li>
+  </ul>
+</nav>

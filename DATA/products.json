@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Pink Baby Dress",
+    "price": 899,
+    "category": "Dresses",
+    "ageGroup": "0-3 months",
+    "sizes": ["0-3M", "3-6M", "6-9M"],
+    "material": "100% Cotton",
+    "description": "Soft and comfortable pink dress",
+    "images": ["/images/product1.jpg", "/images/product1-alt.jpg"],
+    "inStock": true,
+    "rating": 4.5,
+    "reviews": 12
+  }
+]

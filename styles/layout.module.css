@@ -1,0 +1,176 @@
+/* styles/layout.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.header {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 20px;
+  height: 70px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e91e63;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoIcon {
+  font-size: 28px;
+}
+
+.navMenu {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.navItem {
+  position: relative;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s;
+}
+
+.navLink:hover {
+  color: #e91e63;
+}
+
+.arrow {
+  font-size: 12px;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  list-style: none;
+  padding: 10px 0;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  min-width: 200px;
+}
+
+.navItem:hover .submenu {
+  display: block;
+}
+
+.submenuLink {
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.submenuLink:hover {
+  background-color: #f5f5f5;
+  color: #e91e63;
+}
+
+.mobileToggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.mobileMenu {
+  display: none;
+  background: white;
+  padding: 20px;
+  border-top: 1px solid #eee;
+}
+
+.mobileNavLink {
+  display: block;
+  padding: 12px 0;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  border-bottom: 1px solid #eee;
+}
+
+.mobileSubmenu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.mobileSubmenuLink {
+  display: block;
+  padding: 8px 0;
+  text-decoration: none;
+  color: #666;
+  font-size: 14px;
+}
+
+.main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 40px 20px;
+}
+
+.footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .navMenu {
+    display: none;
+  }
+
+  .mobileToggle {
+    display: block;
+  }
+
+  .mobileMenu {
+    display: block;
+  }
+
+  .navbar {
+    height: auto;
+  }
+}
