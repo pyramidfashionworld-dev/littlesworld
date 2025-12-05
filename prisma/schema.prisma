@@ -1,5 +1,3 @@
-// prisma/schema.prisma
-
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -9,7 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// User model for authentication
 model User {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   email         String     @unique
@@ -21,7 +18,6 @@ model User {
   state         String?
   zipCode       String?
   
-  // Relations
   orders        Order[]
   reviews       Review[]
   wishlist      Wishlist[]
@@ -30,23 +26,21 @@ model User {
   updatedAt     DateTime   @updatedAt
 }
 
-// Product model
 model Product {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   price         Int
   discountPrice Int?
-  category      String     // Dresses, Rompers, Jackets, etc.
+  category      String
   subcategory   String?
-  ageGroup      String     // 0-3 months, 3-6 months, etc.
-  sizes         String[]   // ["0-3M", "3-6M", "6-9M"]
+  ageGroup      String
+  sizes         String[]
   material      String
   description   String
-  images        String[]   // Array of image URLs
+  images        String[]
   stock         Int        @default(0)
   rating        Float      @default(0)
   
-  // Relations
   reviews       Review[]
   orderItems    OrderItem[]
   wishlist      Wishlist[]
@@ -55,7 +49,6 @@ model Product {
   updatedAt     DateTime   @updatedAt
 }
 
-// Order model
 model Order {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   userId        String     @db.ObjectId
@@ -65,15 +58,12 @@ model Order {
   items         OrderItem[]
   totalAmount   Int
   
-  // Payment info
-  paymentStatus String     @default("pending") // pending, completed, failed
-  paymentId     String?    // Razorpay payment ID
-  orderId       String?    // Razorpay order ID
+  paymentStatus String     @default("pending")
+  paymentId     String?
+  orderId       String?
   
-  // Order status
-  status        String     @default("pending") // pending, confirmed, shipped, delivered, cancelled
+  status        String     @default("pending")
   
-  // Shipping details
   shippingAddress String
   shippingCity  String
   shippingState String
@@ -86,7 +76,6 @@ model Order {
   updatedAt     DateTime   @updatedAt
 }
 
-// Order Items (products in an order)
 model OrderItem {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   orderId       String     @db.ObjectId
@@ -97,12 +86,11 @@ model OrderItem {
   
   quantity      Int
   size          String
-  price         Int        // Price at time of purchase
+  price         Int
   
   createdAt     DateTime   @default(now())
 }
 
-// Reviews model
 model Review {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   productId     String     @db.ObjectId
@@ -111,7 +99,7 @@ model Review {
   userId        String     @db.ObjectId
   user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  rating        Int        // 1-5 stars
+  rating        Int
   title         String
   comment       String
   helpful       Int        @default(0)
@@ -120,7 +108,6 @@ model Review {
   updatedAt     DateTime   @updatedAt
 }
 
-// Wishlist model
 model Wishlist {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   userId        String     @db.ObjectId
